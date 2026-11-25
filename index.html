@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPI Peluang Usaha di Bidang MPLB - Fase E SMK</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS untuk Ekspor Excel 5 Sheet Terpisah (.xlsx) -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fdf2f4',
+                            100: '#fce7eb',
+                            500: '#e11d48',
+                            600: '#be123c',
+                            700: '#9f1239',
+                            800: '#881337',
+                            900: '#4c0519',
+                        },
+                        serenity: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #fdf2f4; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        .bg-rose-serenity { background: linear-gradient(135deg, #fce7eb 0%, #e0f2fe 100%); }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased selection:bg-primary-500 selection:text-white">
+
+    <!-- ===================================================================== -->
+    <!-- 1. GERBANG LOGIN UTAMA (PEMISAHAN LOGIN SISWA & LOGIN GURU)           -->
+    <!-- ===================================================================== -->
+    <div id="authGatewayModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl space-y-6 animate-fade-in border-t-4 border-primary-500 my-auto">
+            
+            <!-- Header Portal -->
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary-500 to-serenity-500 text-white flex items-center justify-center text-2xl shadow-lg shadow-primary-500/30 shrink-0">
+                    <i class="fa-solid fa-briefcase"></i>
+                </div>
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-primary-600">Media Pembelajaran Interaktif PjBL</span>
+                    <h2 class="font-display font-bold text-lg sm:text-xl text-slate-900">Peluang Usaha Bidang MPLB</h2>
+                    <p class="text-xs text-slate-500">Guru Pengampu: <strong>Cahyana Dewi Ratna Cantika</strong></p>
+                </div>
+            </div>
+
+            <!-- STEP A: PILIH PERAN (SISWA ATAU GURU) -->
+            <div id="roleSelectionView" class="space-y-4">
+                <p class="text-sm text-slate-600 text-center font-medium">Silakan pilih jenis akses untuk masuk ke dalam aplikasi:</p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <!-- Kartu Login Siswa -->
+                    <button onclick="selectLoginRole('student')" class="group p-6 rounded-2xl border-2 border-slate-200 hover:border-primary-500 bg-slate-50 hover:bg-rose-50/50 transition-all text-left space-y-3 shadow-sm hover:shadow-md">
+                        <div class="w-12 h-12 rounded-2xl bg-primary-100 text-primary-600 group-hover:bg-primary-600 group-hover:text-white flex items-center justify-center text-xl transition-colors">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-display font-bold text-base text-slate-900">Login Siswa</h3>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">Masuk untuk mempelajari materi, mengerjakan proyek PjBL, dan evaluasi akhir.</p>
+                        </div>
+                        <div class="text-xs font-bold text-primary-600 flex items-center gap-1 pt-1">
+                            <span>Masuk sebagai Siswa</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </button>
+
+                    <!-- Kartu Login Guru -->
+                    <button onclick="selectLoginRole('teacher')" class="group p-6 rounded-2xl border-2 border-slate-200 hover:border-serenity-600 bg-slate-50 hover:bg-sky-50/50 transition-all text-left space-y-3 shadow-sm hover:shadow-md">
+                        <div class="w-12 h-12 rounded-2xl bg-serenity-100 text-serenity-700 group-hover:bg-serenity-600 group-hover:text-white flex items-center justify-center text-xl transition-colors">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-display font-bold text-base text-slate-900">Login Guru</h3>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">Akses khusus pendidik untuk memantau rekapitulasi nilai & mengunduh laporan kelas.</p>
+                        </div>
+                        <div class="text-xs font-bold text-serenity-700 flex items-center gap-1 pt-1">
+                            <span>Masuk Dashboard Guru</span>
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP B: FORM LOGIN SISWA -->
+            <div id="studentLoginFormView" class="hidden space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-display font-bold text-base text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-id-card text-primary-600"></i> Identitas Peserta Didik
+                    </h3>
+                    <button onclick="backToRoleSelection()" class="text-xs font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali
+                    </button>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-sky-50 border border-sky-200 text-xs text-sky-900">
+                    <i class="fa-solid fa-circle-info mr-1 text-sky-600"></i>
+                    Jika sebelumnya sudah pernah masuk, gunakan <strong>Nama Lengkap</strong> dan <strong>Nama Kelompok</strong> yang sama untuk melanjutkan data tanpa membuat duplikasi.
+                </div>
+
+                <div class="space-y-3 text-sm">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap Siswa <span class="text-rose-500">*</span></label>
+                        <input type="text" id="inputNama" placeholder="Contoh: Andi Pratama" class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-primary-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Kelas <span class="text-rose-500">*</span></label>
+                            <input type="text" id="inputKelas" placeholder="Contoh: X MPLB 1" class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-primary-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nomor Absen</label>
+                            <input type="number" id="inputAbsen" placeholder="05" class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-primary-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Nama Kelompok <span class="text-rose-500">*</span></label>
+                        <input type="text" id="inputKelompok" placeholder="Contoh: Kelompok 3" class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-primary-500 outline-none mb-2">
+                        <textarea id="inputAnggota" rows="2" placeholder="Daftar nama anggota kelompok (opsional)..." class="w-full p-2.5 rounded-xl border border-slate-200 text-xs focus:border-primary-500 outline-none"></textarea>
+                    </div>
+                </div>
+
+                <button id="btnStartStudent" onclick="loginAsStudent()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-primary-600 to-serenity-600 hover:from-primary-700 hover:to-serenity-700 text-white font-bold text-sm shadow-lg shadow-primary-500/30 transition-all flex items-center justify-center gap-2">
+                    <span>Masuk ke Beranda Siswa</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- STEP C: FORM LOGIN GURU (VERIFIKASI PIN) -->
+            <div id="teacherLoginFormView" class="hidden space-y-5">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-display font-bold text-base text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-serenity-600"></i> Verifikasi Akses Guru
+                    </h3>
+                    <button onclick="backToRoleSelection()" class="text-xs font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali
+                    </button>
+                </div>
+
+                <div class="text-center space-y-2 py-2">
+                    <div class="w-14 h-14 rounded-2xl bg-serenity-100 text-serenity-700 flex items-center justify-center text-2xl mx-auto">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <p class="text-xs text-slate-600">Masukkan PIN keamanan guru untuk membuka dashboard rekapitulasi seluruh siswa.</p>
+                </div>
+
+                <div>
+                    <input type="password" id="teacherPinInput" onkeypress="if(event.key==='Enter') loginAsTeacher()" placeholder="Masukkan PIN Guru" class="w-full p-3.5 rounded-xl border border-slate-300 text-center font-bold tracking-widest text-lg focus:border-serenity-600 outline-none">
+                </div>
+
+                <button onclick="loginAsTeacher()" class="w-full py-3.5 rounded-2xl bg-serenity-600 hover:bg-serenity-700 text-white font-bold text-sm shadow-lg shadow-serenity-500/30 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-unlock"></i>
+                    <span>Verifikasi & Masuk Dashboard Guru</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- 2. ANTARMUKA KHUSUS SISWA (TANPA AKSES CSV & REKAP GURU)              -->
+    <!-- ===================================================================== -->
+    <div id="studentAppWrapper" class="min-h-screen flex flex-col lg:flex-row hidden">
+        <!-- SIDEBAR SISWA -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-slate-900 text-slate-300 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col border-r border-slate-800">
+            <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary-500 to-serenity-500 flex items-center justify-center text-white shadow-md">
+                        <i class="fa-solid fa-store text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-display font-bold text-white text-base">MPI MPLB</h1>
+                        <p class="text-[11px] text-rose-300">Portal Belajar Siswa</p>
+                    </div>
+                </div>
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1.5 custom-scrollbar">
+                <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 px-3 pb-1">Menu Pembelajaran</div>
+                
+                <button onclick="switchTab('beranda')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all text-left group" data-tab="beranda">
+                    <i class="fa-solid fa-house w-5 text-center text-slate-400 group-hover:text-primary-400"></i>
+                    <span>Beranda Siswa</span>
+                </button>
+
+                <button onclick="switchTab('tujuan')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all text-left group" data-tab="tujuan">
+                    <i class="fa-solid fa-bullseye w-5 text-center text-slate-400 group-hover:text-primary-400"></i>
+                    <span>Tujuan Pembelajaran</span>
+                </button>
+
+                <div class="pt-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-500 px-3 pb-1">Kegiatan PjBL</div>
+
+                <button onclick="switchTab('kegiatan1')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all text-left group" data-tab="kegiatan1">
+                    <i class="fa-solid fa-lightbulb w-5 text-center text-slate-400 group-hover:text-primary-400"></i>
+                    <div class="flex-1 flex items-center justify-between">
+                        <span>Kegiatan 1</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400">Mulai</span>
+                    </div>
+                </button>
+
+                <button onclick="switchTab('kegiatan2')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all text-left group" data-tab="kegiatan2">
+                    <i class="fa-solid fa-chess-board w-5 text-center text-slate-400 group-hover:text-primary-400"></i>
+                    <div class="flex-1 flex items-center justify-between">
+                        <span>Kegiatan 2 (SWOT)</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400">Proyek</span>
+                    </div>
+                </button>
+
+                <button onclick="switchTab('kegiatan3')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all text-left group" data-tab="kegiatan3">
+                    <i class="fa-solid fa-rocket w-5 text-center text-slate-400 group-hover:text-primary-400"></i>
+                    <div class="flex-1 flex items-center justify-between">
+                        <span>Kegiatan 3 (Studio)</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400">PjBL</span>
+                    </div>
+                </button>
+
+                <div class="pt-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-500 px-3 pb-1">Evaluasi & Refleksi</div>
+
+                <button onclick="switchTab('evaluasi')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all text-left group" data-tab="evaluasi">
+                    <i class="fa-solid fa-file-pen w-5 text-center text-slate-400 group-hover:text-primary-400"></i>
+                    <div class="flex-1 flex items-center justify-between">
+                        <span>Evaluasi Akhir</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] bg-primary-900/60 text-primary-300 font-bold">10 Soal</span>
+                    </div>
+                </button>
+
+                <button onclick="switchTab('refleksi')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all text-left group" data-tab="refleksi">
+                    <i class="fa-solid fa-comments w-5 text-center text-slate-400 group-hover:text-primary-400"></i>
+                    <span>Refleksi Peserta Didik</span>
+                </button>
+            </nav>
+
+            <!-- PROFIL SISWA & TOMBOL LOGOUT -->
+            <div class="p-4 border-t border-slate-800 bg-slate-950/60 space-y-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary-600 to-serenity-600 text-white flex items-center justify-center font-bold text-xs shrink-0" id="sidebarAvatar">?</div>
+                    <div class="overflow-hidden flex-1">
+                        <div class="text-xs font-bold text-white truncate" id="sidebarStudentName">Peserta Didik</div>
+                        <div class="text-[11px] text-slate-400 truncate" id="sidebarStudentClass">Kelas -</div>
+                    </div>
+                </div>
+                <button onclick="logoutUser()" class="w-full py-2 px-3 rounded-xl bg-rose-950/80 hover:bg-rose-600 text-rose-200 hover:text-white border border-rose-800/60 text-xs font-bold transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout Siswa</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- KONTEN UTAMA SISWA -->
+        <div class="flex-1 flex flex-col min-w-0 lg:pl-72">
+            <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleSidebar()" class="lg:hidden w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center hover:bg-slate-200">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div>
+                        <div class="text-xs font-bold text-primary-600 uppercase tracking-wider">Dasar-Dasar MPLB • Fase E • Media PjBL</div>
+                        <h2 class="font-display font-bold text-slate-900 text-base sm:text-lg" id="headerTitle">Beranda Siswa</h2>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span id="syncIndicator" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold">
+                        <i class="fa-solid fa-cloud-check"></i> Tersimpan Otomatis
+                    </span>
+                </div>
+            </header>
+
+            <main class="flex-1 p-4 sm:p-8 overflow-y-auto">
+                <div class="max-w-5xl mx-auto" id="mainContainer">
+                    <!-- Konten Siswa Dinamis -->
+                </div>
+
+                <footer class="max-w-5xl mx-auto mt-12 pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 pb-6">
+                    <div class="flex items-center gap-2 text-center sm:text-left">
+                        <span class="w-2 h-2 rounded-full bg-primary-500"></span>
+                        <span>MPI Dasar-Dasar MPLB (Fase E SMK) • Guru Pengampu: <strong class="text-slate-700">Cahyana Dewi Ratna Cantika</strong></span>
+                    </div>
+                    <div class="text-slate-400 font-medium">November 2026 • LKPD PjBL</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- 3. ANTARMUKA KHUSUS DASHBOARD GURU (REAL-TIME & EKSPOR EXCEL/CSV)     -->
+    <!-- ===================================================================== -->
+    <div id="teacherAppWrapper" class="min-h-screen bg-slate-100 hidden">
+        <!-- Navbar Guru -->
+        <header class="sticky top-0 z-30 bg-slate-900 text-white border-b border-slate-800 px-4 sm:px-8 py-4 shadow-md">
+            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary-500 to-serenity-500 flex items-center justify-center text-white shadow">
+                        <i class="fa-solid fa-chalkboard-user text-lg"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/30">Google Sheets Sync</span>
+                            <span class="text-xs text-slate-400">Portal Khusus Pendidik</span>
+                        </div>
+                        <h1 class="font-display font-bold text-base sm:text-lg">Dashboard Rekapitulasi Hasil Belajar MPLB</h1>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2.5">
+                    <button onclick="fetchTeacherDataFromSheets()" class="px-4 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span>Refresh Data</span>
+                    </button>
+                    <button onclick="exportTeacherExcel5Sheets()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-file-excel"></i>
+                        <span>Ekspor Excel (5 Sheet)</span>
+                    </button>
+                    <button onclick="exportTeacherCSV()" class="px-4 py-2.5 rounded-xl bg-serenity-600 hover:bg-serenity-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-file-csv"></i>
+                        <span>Unduh CSV</span>
+                    </button>
+                    <button onclick="logoutUser()" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Keluar</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Konten Utama Dashboard Guru -->
+        <main class="max-w-7xl mx-auto p-4 sm:p-8 space-y-6">
+            <!-- Banner Info Guru -->
+            <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-serenity-950 rounded-3xl p-6 sm:p-8 text-white shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <span class="text-xs font-bold text-rose-300 uppercase tracking-wider">Guru Pengampu Mata Pelajaran</span>
+                    <h2 class="font-display font-bold text-2xl sm:text-3xl">Cahyana Dewi Ratna Cantika</h2>
+                    <p class="text-slate-300 text-xs sm:text-sm">Data di bawah ini tersinkronisasi langsung dari database Google Sheets (5 Sheet terpisah).</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-4 text-xs space-y-1 shrink-0">
+                    <div class="text-slate-300">Status Koneksi Google Sheets:</div>
+                    <div id="teacherConnectionStatus" class="font-bold text-emerald-400 flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Siap Memuat Data
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistik Ringkas Kelas -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-1">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Total Peserta Terdaftar</span>
+                    <div class="font-display font-bold text-3xl text-slate-900" id="statTotalSiswa">0</div>
+                    <span class="text-[11px] text-slate-500">Data unik berdasarkan Nama & Kelompok</span>
+                </div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-1">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Selesai Evaluasi Akhir</span>
+                    <div class="font-display font-bold text-3xl text-primary-600" id="statSelesaiEval">0</div>
+                    <span class="text-[11px] text-slate-500">KKTP Ketuntasan: 75</span>
+                </div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-1">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Rata-Rata Nilai Kelas</span>
+                    <div class="font-display font-bold text-3xl text-serenity-600" id="statRataNilai">0</div>
+                    <span class="text-[11px] text-slate-500">Skala 0 - 100</span>
+                </div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-1">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Selesai Refleksi Akhir</span>
+                    <div class="font-display font-bold text-3xl text-emerald-600" id="statSelesaiRefleksi">0</div>
+                    <span class="text-[11px] text-slate-500">Peserta mengisi refleksi</span>
+                </div>
+            </div>
+
+            <!-- Tabel Rekapitulasi Seluruh Siswa -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div>
+                        <h3 class="font-display font-bold text-lg text-slate-900">Rekapitulasi Seluruh Peserta Didik</h3>
+                        <p class="text-xs text-slate-500">Menampilkan status pengerjaan aktivitas, proyek, dan hasil evaluasi dari Google Sheets.</p>
+                    </div>
+                    <div class="relative">
+                        <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="teacherSearchInput" onkeyup="renderTeacherTable()" placeholder="Cari nama atau kelompok..." class="pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:border-serenity-600 outline-none w-full sm:w-64">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-700">
+                        <thead class="bg-slate-100 text-slate-800 uppercase font-bold text-[11px]">
+                            <tr>
+                                <th class="p-3.5 rounded-l-xl">No</th>
+                                <th class="p-3.5">Nama Peserta Didik</th>
+                                <th class="p-3.5">Kelas / Absen</th>
+                                <th class="p-3.5">Kelompok</th>
+                                <th class="p-3.5">Status Pengerjaan</th>
+                                <th class="p-3.5">Hasil Evaluasi</th>
+                                <th class="p-3.5 rounded-r-xl">Terakhir Diperbarui</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacherTableBody" class="divide-y divide-slate-100">
+                            <tr>
+                                <td colspan="7" class="p-8 text-center text-slate-400">Memuat data peserta didik...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- ===================================================================== -->
+    <!-- 4. LOGIKA APLIKASI TERHUBUNG GOOGLE APPS SCRIPT (WEB_APP_URL)         -->
+    <!-- ===================================================================== -->
+    <script>
+        // =====================================================================
+        // PENGATURAN UTAMA: GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+        // =====================================================================
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwRxMgZu3jKAbv7gWKuuJtlNUFYjXTxCVEzhdmrYdVLRjjxvAd_-dpLlJoFDCBJ6jLV/exec";
+        const TEACHER_PIN = "1234";
+
+        // Mengecek apakah WEB_APP_URL sudah diisi dengan benar
+        function isWebAppConfigured() {
+            return WEB_APP_URL && WEB_APP_URL.startsWith("https://script.google.com/");
+        }
+
+        // Data Soal Evaluasi
+        const evaluasiSoal = [
+            { id: 1, soal: "Pernyataan yang paling tepat tentang pengertian peluang usaha adalah…", options: { A: "Modal besar yang tersedia di bank untuk dipinjamkan kepada pelaku usaha.", B: "Ide yang berangkat dari tren pasar atau permintaan konsumen dan dikembangkan menjadi usaha dengan memanfaatkan sumber daya yang tersedia.", C: "Lowongan pekerjaan yang diumumkan oleh perusahaan besar.", D: "Usaha yang sudah berjalan lama dan memiliki banyak cabang.", E: "Barang dagangan yang dijual dengan harga paling murah di pasar." }, kunci: "B" },
+            { id: 2, soal: "Pekerjaan membalas e-mail atau chat, mengatur jadwal, dan membuat rekap data yang dilakukan secara online termasuk peluang usaha…", options: { A: "Jasa event administration.", B: "Jasa pembuatan CV dan dokumen.", C: "Virtual assistant.", D: "Jasa pengelolaan administrasi UMKM.", E: "Jasa fotokopi dan percetakan." }, kunci: "C" },
+            { id: 3, soal: "Seorang lulusan MPLB ingin membantu pedagang online mencatat transaksi, stok barang dan data pelanggan, serta membuat laporan sederhana. Peluang usaha yang sesuai adalah…", options: { A: "Jasa pembuatan CV dan dokumen.", B: "Jasa event administration.", C: "Jasa fotokopi dan percetakan.", D: "Jasa pengelolaan administrasi UMKM.", E: "Jasa penerjemahan dokumen." }, kunci: "D" },
+            { id: 4, soal: "Semakin banyak UMKM yang melakukan transaksi melalui QRIS dan promosi melalui media sosial. Peluang usaha MPLB yang paling relevan dengan tren tersebut adalah…", options: { A: "Jasa pencatatan transaksi dengan buku manual tanpa bantuan aplikasi.", B: "Jasa mengetik surat dengan mesin ketik.", C: "Jasa penyimpanan uang tunai milik pelanggan.", D: "Jasa penjualan buku agenda cetak.", E: "Jasa yang membantu UMKM mencatat transaksi non-tunai dan membuat laporan sederhana secara digital." }, kunci: "E" },
+            { id: 5, soal: "Caca ingin membuka usaha, tetapi belum menentukan bidangnya. Ia mengikuti pelatihan literasi digital dan mempelajari kisah pelaku usaha yang berhasil. Langkah memulai usaha yang sedang dilakukan Caca adalah…", options: { A: "Memilih bidang usaha yang diminati.", B: "Memperluas jaringan bisnis.", C: "Menentukan keunikan dan nilai unggul.", D: "Memulai dan mengevaluasi usaha.", E: "Menyusun laporan keuangan usaha." }, kunci: "A" },
+            { id: 6, soal: "Sebuah jasa pembuatan CV memiliki SWOT sebagai berikut: S: Responsif membalas pesan. W: Belum memiliki portofolio. O: Banyak pencari kerja baru. T: Banyak pesaing. Strategi yang paling tepat memanfaatkan kekuatan untuk meraih peluang adalah…", options: { A: "Menunggu pesaing menghentikan usahanya.", B: "Menurunkan harga hingga usaha merugi.", C: "Menunda usaha sampai portofolio sangat banyak.", D: "Menawarkan layanan CV yang cepat dan responsif melalui media sosial.", E: "Memusatkan seluruh kegiatan untuk menutupi kelemahan portofolio." }, kunci: "D" },
+            { id: 7, soal: "Seorang admin menyapa pelanggan dengan ramah, mendengarkan keluhan hingga tuntas, lalu segera memproses perbaikan dokumen. Urutan penerapan prinsip A3 pada kasus tersebut adalah…", options: { A: "Action, Attention, Attitude.", B: "Attention, Attitude, Action.", C: "Attitude, Action, Attention.", D: "Attention, Action, Attitude.", E: "Attitude, Attention, Action." }, kunci: "E" },
+            { id: 8, soal: "Sebelum membuka jasa administrasi untuk guru, Marsha menyebarkan angket kertas kepada 20 guru untuk mengetahui masalah administrasi yang mereka hadapi. Tindakan Marsha menerapkan kunci keberhasilan usaha, yaitu…", options: { A: "Berinovasi dan mampu beradaptasi.", B: "Memberikan pelayanan prima.", C: "Mengetahui kebutuhan pelanggan.", D: "Memanfaatkan teknologi digital.", E: "Memiliki kemampuan mengelola usaha." }, kunci: "C" },
+            { id: 9, soal: "Pelanggan jasa pengelolaan administrasi UMKM mulai beralih ke aplikasi pencatatan otomatis. Pemilik usaha lalu menambah layanan konsultasi pemanfaatan aplikasi tersebut. Tindakan ini menunjukkan kunci keberhasilan…", options: { A: "Berinovasi dan mampu beradaptasi.", B: "Mengetahui kebutuhan pelanggan.", C: "Memiliki kemampuan mengelola usaha.", D: "Memberikan pelayanan prima.", E: "Memperluas jaringan bisnis." }, kunci: "A" },
+            { id: 10, soal: "Pemilik jasa administrasi membuat jadwal kerja, mencatat pemasukan dan pengeluaran, serta menyimpan arsip pesanan. Hal tersebut mencerminkan kunci keberhasilan…", options: { A: "Berinovasi dan mampu beradaptasi.", B: "Memanfaatkan teknologi digital.", C: "Mengetahui kebutuhan pelanggan.", D: "Memberikan pelayanan prima.", E: "Memiliki kemampuan mengelola usaha." }, kunci: "E" }
+        ];
+
+        // State Default Bersih untuk Sesi Baru
+        function getDefaultAppState() {
+            return {
+                docId: '',
+                student: { nama: '', kelas: '', absen: '', kelompok: '', anggota: '', waktuMulai: '', updatedAt: '' },
+                currentTab: 'beranda',
+                k1: {
+                    apersepsi1: '', apersepsi2: '',
+                    tabel1: [
+                        { pelaku: 'Contoh: Warung Sembako Bu Siti', kendala: 'Pencatatan nota manual sering tercecer', solusi: 'Aplikasi pencatatan transaksi digital' },
+                        { pelaku: '', kendala: '', solusi: '' },
+                        { pelaku: '', kendala: '', solusi: '' }
+                    ],
+                    kasus1: '', kasus2: '', kasus3: '', kasusChecked: false,
+                    refleksi: { q1: '', q2: '', q3: '', q4: '' }
+                },
+                k2: {
+                    rancanganUsaha: { namaUsaha: '', jasa: '', targetPelanggan: '', nilaiUnggul: '' },
+                    swot: { strengths: ['', ''], weaknesses: ['', ''], opportunities: ['', ''], threats: ['', ''] },
+                    goCareerQ1: '', goCareerQ2: '', goCareerChecked: false,
+                    refleksi: { q1: '', q2: '', q3: '', q4: '' }
+                },
+                k3: {
+                    monitoring: [
+                        { tanggal: '', kegiatan: '', kendala: '', persen: '0' }
+                    ],
+                    promosi: { namaUsaha: '', jasa: '', keunggulan: '', kontak: '', uploadedImage: '' },
+                    kasusAdminPro: { kunciBelumDiterapkan: '', usulanInovasi: '', attitude: '', attention: '', action: '', submitted: false },
+                    refleksi: { q1: '', q2: '', q3: '', q4: '' }
+                },
+                evaluasi: {
+                    answers: {}, submitted: false, score: 0, benar: 0, salah: 0, currentIndex: 0
+                },
+                refleksiAkhir: { pemahaman: '', perasaan: '', menarik: '', kesulitan: '', lanjutan: '', submitted: false }
+            };
+        }
+
+        window.appState = getDefaultAppState();
+        window.allStudentsRecords = [];
+        window.teacherSheetsRawData = null;
+        let teacherAutoRefreshInterval = null;
+
+        // Membuat ID Dokumen Unik & Konsisten Berdasarkan Nama + Kelompok (Anti-Duplikasi)
+        function generateDeterministicDocId(nama, kelompok) {
+            const cleanNama = nama.trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
+            const cleanKelompok = kelompok.trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
+            return `siswa_${cleanNama}__kel_${cleanKelompok}`;
+        }
+
+        // =====================================================================
+        // NAVIGASI PORTAL LOGIN & LOGOUT
+        // =====================================================================
+        window.selectLoginRole = function(role) {
+            document.getElementById('roleSelectionView').classList.add('hidden');
+            if (role === 'student') {
+                document.getElementById('studentLoginFormView').classList.remove('hidden');
+            } else {
+                document.getElementById('teacherLoginFormView').classList.remove('hidden');
+                document.getElementById('teacherPinInput').value = '';
+                document.getElementById('teacherPinInput').focus();
+            }
+        };
+
+        window.backToRoleSelection = function() {
+            document.getElementById('studentLoginFormView').classList.add('hidden');
+            document.getElementById('teacherLoginFormView').classList.add('hidden');
+            document.getElementById('roleSelectionView').classList.remove('hidden');
+        };
+
+        // ALUR LOGIN SISWA (BEBAS MACET - LANGSUNG MASUK & SINKRONISASI KE SHEETS)
+        window.loginAsStudent = async function() {
+            const nama = document.getElementById('inputNama').value.trim();
+            const kelas = document.getElementById('inputKelas').value.trim();
+            const absen = document.getElementById('inputAbsen').value.trim();
+            const kelompok = document.getElementById('inputKelompok').value.trim();
+            const anggota = document.getElementById('inputAnggota').value.trim();
+
+            if (!nama || !kelas || !kelompok) {
+                showToast("Nama lengkap, kelas, dan nama kelompok wajib diisi!", "error");
+                return;
+            }
+
+            const btn = document.getElementById('btnStartStudent');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Menyiapkan Ruang Belajar...</span>`;
+
+            try {
+                const docId = generateDeterministicDocId(nama, kelompok);
+                const localStorageKey = `mpi_mplb_session_${docId}`;
+                const savedLocalRaw = localStorage.getItem(localStorageKey);
+
+                // Reset state dulu ke bersih
+                window.appState = getDefaultAppState();
+                window.appState.docId = docId;
+
+                if (savedLocalRaw) {
+                    // Pulihkan progres sebelumnya jika siswa sudah pernah login dengan Nama + Kelompok yang sama
+                    const parsedLocal = JSON.parse(savedLocalRaw);
+                    window.appState = {
+                        ...window.appState,
+                        ...parsedLocal,
+                        docId: docId,
+                        student: {
+                            ...parsedLocal.student,
+                            nama: nama,
+                            kelas: kelas,
+                            absen: absen || parsedLocal.student?.absen || '-',
+                            kelompok: kelompok,
+                            anggota: anggota || parsedLocal.student?.anggota || '',
+                            updatedAt: new Date().toLocaleString('id-ID')
+                        }
+                    };
+                    showToast(`Selamat datang kembali, ${nama}! Progres belajar sebelumnya berhasil dimuat.`, "success");
+                } else {
+                    // Sesi belajar baru
+                    window.appState.student = {
+                        nama,
+                        kelas,
+                        absen: absen || '-',
+                        kelompok,
+                        anggota,
+                        waktuMulai: new Date().toLocaleString('id-ID'),
+                        updatedAt: new Date().toLocaleString('id-ID')
+                    };
+                    showToast(`Selamat datang, ${nama}! Sesi belajar baru dimulai.`, "success");
+                }
+
+                // Simpan lokal & kirim ke Google Sheets (tidak memblokir masuk apabila offline/CORS lokal)
+                await saveStudentProgressToSheets(false);
+
+                // Langsung masuk ke Halaman Beranda Siswa
+                document.getElementById('authGatewayModal').classList.add('hidden');
+                document.getElementById('teacherAppWrapper').classList.add('hidden');
+                document.getElementById('studentAppWrapper').classList.remove('hidden');
+
+                updateSidebarIdentity();
+                switchTab('beranda');
+            } catch (err) {
+                console.error("Error saat login siswa:", err);
+                showToast("Terjadi kendala teknis, masuk dalam mode penyimpanan perangkat.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>Masuk ke Beranda Siswa</span> <i class="fa-solid fa-arrow-right"></i>`;
+            }
+        };
+
+        // ALUR LOGIN GURU (VERIFIKASI PIN & AMBIL DATA DARI GOOGLE SHEETS)
+        window.loginAsTeacher = async function() {
+            const pin = document.getElementById('teacherPinInput').value.trim();
+            if (pin !== TEACHER_PIN) {
+                showToast("PIN Guru salah! Akses ditolak.", "error");
+                return;
+            }
+
+            document.getElementById('authGatewayModal').classList.add('hidden');
+            document.getElementById('studentAppWrapper').classList.add('hidden');
+            document.getElementById('teacherAppWrapper').classList.remove('hidden');
+
+            showToast("Login Guru berhasil! Memuat data dari Google Sheets...", "success");
+            await fetchTeacherDataFromSheets();
+
+            // Auto-refresh setiap 15 detik agar dashboard guru tetap terbarui
+            if (teacherAutoRefreshInterval) clearInterval(teacherAutoRefreshInterval);
+            teacherAutoRefreshInterval = setInterval(fetchTeacherDataFromSheets, 15000);
+        };
+
+        // LOGOUT UNTUK SISWA MAUPUN GURU
+        window.logoutUser = async function() {
+            if (!document.getElementById('studentAppWrapper').classList.contains('hidden')) {
+                await saveStudentProgressToSheets(false);
+            }
+
+            if (teacherAutoRefreshInterval) {
+                clearInterval(teacherAutoRefreshInterval);
+                teacherAutoRefreshInterval = null;
+            }
+
+            window.appState = getDefaultAppState();
+            document.getElementById('inputNama').value = '';
+            document.getElementById('inputKelas').value = '';
+            document.getElementById('inputAbsen').value = '';
+            document.getElementById('inputKelompok').value = '';
+            document.getElementById('inputAnggota').value = '';
+            document.getElementById('teacherPinInput').value = '';
+
+            document.getElementById('studentAppWrapper').classList.add('hidden');
+            document.getElementById('teacherAppWrapper').classList.add('hidden');
+            backToRoleSelection();
+            document.getElementById('authGatewayModal').classList.remove('hidden');
+
+            showToast("Anda telah logout. Data pengerjaan tetap tersimpan aman.", "success");
+        };
+
+        // =====================================================================
+        // PENYIMPANAN DATA KE GOOGLE SHEETS (VIA WEB_APP_URL) & CADANGAN LOKAL
+        // =====================================================================
+        window.saveStudentProgressToSheets = async function(showNotification = true) {
+            if (!window.appState.docId) return;
+
+            const indicator = document.getElementById('syncIndicator');
+            if (indicator) {
+                indicator.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...`;
+            }
+
+            window.appState.student.updatedAt = new Date().toLocaleString('id-ID');
+
+            // Tentukan status pengerjaan ringkas
+            let statusPengerjaan = "Sedang Mengerjakan";
+            if (window.appState.evaluasi.submitted && window.appState.refleksiAkhir.submitted) {
+                statusPengerjaan = "Tuntas (Evaluasi & Refleksi)";
+            } else if (window.appState.evaluasi.submitted) {
+                statusPengerjaan = "Selesai Evaluasi";
+            } else if (window.appState.k2.rancanganUsaha.namaUsaha) {
+                statusPengerjaan = "Mengerjakan Proyek";
+            }
+
+            // 1. Selalu simpan di localStorage browser sebagai cadangan instan anti-hilang
+            try {
+                localStorage.setItem(`mpi_mplb_session_${window.appState.docId}`, JSON.stringify(window.appState));
+            } catch (e) {
+                console.warn("LocalStorage penuh:", e);
+            }
+
+            // 2. Kirim ke Google Sheets via WEB_APP_URL jika sudah dikonfigurasi
+            if (isWebAppConfigured()) {
+                try {
+                    const payload = {
+                        docId: window.appState.docId,
+                        student: window.appState.student,
+                        statusPengerjaan: statusPengerjaan,
+                        k1: window.appState.k1,
+                        k2: window.appState.k2,
+                        k3: window.appState.k3,
+                        evaluasi: window.appState.evaluasi,
+                        refleksiAkhir: window.appState.refleksiAkhir
+                    };
+
+                    // Gunakan mode 'no-cors' dengan text/plain agar Google Apps Script selalu menerima POST dari GitHub Pages/Vercel tanpa error CORS
+                    await fetch(WEB_APP_URL, {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: {
+                            "Content-Type": "text/plain;charset=utf-8"
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (indicator) {
+                        indicator.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Tersimpan di Google Sheets`;
+                    }
+                    if (showNotification) {
+                        showToast("Progres berhasil dikirim ke Google Sheets!", "success");
+                    }
+                } catch (error) {
+                    console.error("Gagal mengirim ke Google Sheets:", error);
+                    if (indicator) {
+                        indicator.innerHTML = `<i class="fa-solid fa-hard-drive text-amber-600"></i> Tersimpan di Perangkat`;
+                    }
+                }
+            } else {
+                if (indicator) {
+                    indicator.innerHTML = `<i class="fa-solid fa-check"></i> Tersimpan Otomatis (Lokal)`;
+                }
+                if (showNotification) {
+                    showToast("Progres berhasil disimpan!", "success");
+                }
+            }
+        };
+
+        // =====================================================================
+        // PENGAMBILAN DATA REKAPITULASI UNTUK DASHBOARD GURU
+        // =====================================================================
+        window.fetchTeacherDataFromSheets = async function() {
+            const statusEl = document.getElementById('teacherConnectionStatus');
+            const tbody = document.getElementById('teacherTableBody');
+
+            if (!isWebAppConfigured()) {
+                if (statusEl) {
+                    statusEl.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> WEB_APP_URL Belum Diisi (Menampilkan Data Lokal)`;
+                }
+                loadLocalRecordsFallbackForTeacher();
+                return;
+            }
+
+            try {
+                if (statusEl) {
+                    statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-400"></i> Mengambil data dari Google Sheets...`;
+                }
+
+                const response = await fetch(`${WEB_APP_URL}?action=getAllSheetsRekap`);
+                const result = await response.json();
+
+                if (result.status === 'success' && result.sheets) {
+                    window.teacherSheetsRawData = result.sheets;
+                    
+                    const sheetIdentitas = result.sheets['IDENTITAS'] || [];
+                    const sheetEvaluasi = result.sheets['HASIL EVALUASI'] || [];
+                    const sheetRefleksi = result.sheets['REFLEKSI SISWA'] || [];
+
+                    // Gabungkan data dari 5 Sheet berdasarkan ID Siswa
+                    const mergedRecords = sheetIdentitas.map(idRow => {
+                        const docId = idRow['ID Siswa'];
+                        const evalRow = sheetEvaluasi.find(e => e['ID Siswa'] === docId) || {};
+                        const refRow = sheetRefleksi.find(r => r['ID Siswa'] === docId) || {};
+
+                        return {
+                            docId: docId,
+                            student: {
+                                nama: idRow['Nama Peserta Didik'] || '-',
+                                kelas: idRow['Kelas'] || '-',
+                                absen: idRow['Nomor Absen'] || '-',
+                                kelompok: idRow['Nama Kelompok'] || '-',
+                                anggota: idRow['Anggota Kelompok'] || '-',
+                                waktuMulai: idRow['Waktu Mulai'] || '-',
+                                updatedAt: idRow['Terakhir Diperbarui'] || '-'
+                            },
+                            statusPengerjaan: idRow['Status Pengerjaan'] || 'Aktif',
+                            evaluasi: {
+                                submitted: evalRow['Status Evaluasi'] === 'Sudah Mengerjakan',
+                                benar: Number(evalRow['Jawaban Benar']) || 0,
+                                salah: Number(evalRow['Jawaban Salah']) || 0,
+                                score: Number(evalRow['Nilai Akhir']) || 0
+                            },
+                            refleksiAkhir: {
+                                submitted: Boolean(refRow['Tingkat Pemahaman'] && refRow['Tingkat Pemahaman'] !== '-'),
+                                pemahaman: refRow['Tingkat Pemahaman'] || '-'
+                            }
+                        };
+                    });
+
+                    window.allStudentsRecords = mergedRecords;
+                    updateTeacherStats();
+                    renderTeacherTable();
+
+                    if (statusEl) {
+                        statusEl.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> Terhubung ke Google Sheets (${mergedRecords.length} Siswa)`;
+                    }
+                }
+            } catch (error) {
+                console.error("Gagal mengambil data guru dari Google Sheets:", error);
+                if (statusEl) {
+                    statusEl.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span> Gagal Memuat Sheets (Cek Izin Deploy)`;
+                }
+                loadLocalRecordsFallbackForTeacher();
+            }
+        };
+
+        // Cadangan membaca data localStorage jika WEB_APP_URL belum dipasang
+        function loadLocalRecordsFallbackForTeacher() {
+            const list = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('mpi_mplb_session_')) {
+                    try {
+                        const parsed = JSON.parse(localStorage.getItem(key));
+                        list.push({
+                            docId: parsed.docId,
+                            student: parsed.student,
+                            statusPengerjaan: parsed.evaluasi?.submitted ? 'Selesai Evaluasi' : 'Sedang Mengerjakan',
+                            evaluasi: parsed.evaluasi || {},
+                            refleksiAkhir: parsed.refleksiAkhir || {},
+                            k1: parsed.k1,
+                            k2: parsed.k2,
+                            k3: parsed.k3
+                        });
+                    } catch (e) {}
+                }
+            }
+            window.allStudentsRecords = list;
+            updateTeacherStats();
+            renderTeacherTable();
+        }
+
+        function updateTeacherStats() {
+            const records = window.allStudentsRecords;
+            const total = records.length;
+            const selesaiEvalList = records.filter(r => r.evaluasi && r.evaluasi.submitted);
+            const selesaiRefleksiCount = records.filter(r => r.refleksiAkhir && r.refleksiAkhir.submitted).length;
+
+            let rataRata = 0;
+            if (selesaiEvalList.length > 0) {
+                const totalNilai = selesaiEvalList.reduce((acc, item) => acc + (Number(item.evaluasi.score) || 0), 0);
+                rataRata = Math.round(totalNilai / selesaiEvalList.length);
+            }
+
+            document.getElementById('statTotalSiswa').innerText = total;
+            document.getElementById('statSelesaiEval').innerText = `${selesaiEvalList.length} / ${total}`;
+            document.getElementById('statRataNilai').innerText = rataRata;
+            document.getElementById('statSelesaiRefleksi').innerText = selesaiRefleksiCount;
+        }
+
+        window.renderTeacherTable = function() {
+            const tbody = document.getElementById('teacherTableBody');
+            const keyword = (document.getElementById('teacherSearchInput')?.value || '').toLowerCase();
+
+            const filtered = window.allStudentsRecords.filter(item => {
+                const nama = (item.student?.nama || '').toLowerCase();
+                const kelompok = (item.student?.kelompok || '').toLowerCase();
+                const kelas = (item.student?.kelas || '').toLowerCase();
+                return nama.includes(keyword) || kelompok.includes(keyword) || kelas.includes(keyword);
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="p-8 text-center text-slate-400">
+                            ${window.allStudentsRecords.length === 0 ? 'Belum ada peserta didik yang masuk ke dalam sistem.' : 'Tidak ada data yang cocok dengan pencarian.'}
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((item, idx) => {
+                const s = item.student || {};
+                const ev = item.evaluasi || {};
+                const status = item.statusPengerjaan || 'Aktif';
+                
+                let nilaiBadge = `<span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 font-semibold">Belum Evaluasi</span>`;
+                if (ev.submitted) {
+                    const isTuntas = ev.score >= 75;
+                    nilaiBadge = `
+                        <span class="px-2.5 py-1 rounded-full font-bold ${isTuntas ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                            ${ev.score} (${isTuntas ? 'Tuntas' : 'Remedial'})
+                        </span>
+                    `;
+                }
+
+                return `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-3.5 font-semibold text-slate-500">${idx + 1}</td>
+                        <td class="p-3.5 font-bold text-slate-900">${s.nama || '-'}</td>
+                        <td class="p-3.5">${s.kelas || '-'} <span class="text-slate-400">(Absen: ${s.absen || '-'})</span></td>
+                        <td class="p-3.5 font-semibold text-primary-700">${s.kelompok || '-'}</td>
+                        <td class="p-3.5">
+                            <span class="px-2.5 py-1 rounded-lg bg-sky-50 text-sky-700 border border-sky-200 font-semibold text-[11px]">
+                                ${status}
+                            </span>
+                        </td>
+                        <td class="p-3.5">${nilaiBadge}</td>
+                        <td class="p-3.5 text-slate-500 text-[11px]">${s.updatedAt || s.waktuMulai || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+        };
+
+        // =====================================================================
+        // EKSPOR LAPORAN KHUSUS GURU (EXCEL 5 SHEET & CSV)
+        // =====================================================================
+        window.exportTeacherExcel5Sheets = function() {
+            const workbook = XLSX.utils.book_new();
+
+            if (window.teacherSheetsRawData) {
+                const s1 = window.teacherSheetsRawData['IDENTITAS'] || [];
+                const s2 = window.teacherSheetsRawData['AKTIVITAS PEMBELAJARAN'] || [];
+                const s3 = window.teacherSheetsRawData['HASIL PROYEK'] || [];
+                const s4 = window.teacherSheetsRawData['HASIL EVALUASI'] || [];
+                const s5 = window.teacherSheetsRawData['REFLEKSI SISWA'] || [];
+
+                if (s1.length === 0) {
+                    showToast("Belum ada data siswa di Google Sheets untuk diekspor.", "error");
+                    return;
+                }
+
+                XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(s1), "Identitas");
+                XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(s2), "Aktivitas Pembelajaran");
+                XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(s3), "Hasil Proyek");
+                XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(s4), "Hasil Evaluasi");
+                XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(s5), "Refleksi Siswa");
+            } else {
+                const records = window.allStudentsRecords;
+                if (!records || records.length === 0) {
+                    showToast("Belum ada data siswa untuk diekspor.", "error");
+                    return;
+                }
+
+                const sheet1Data = records.map((r, i) => ({
+                    "No": i + 1,
+                    "Nama Peserta Didik": r.student?.nama || '-',
+                    "Kelas": r.student?.kelas || '-',
+                    "Nomor Absen": r.student?.absen || '-',
+                    "Nama Kelompok": r.student?.kelompok || '-',
+                    "Waktu Mulai": r.student?.waktuMulai || '-',
+                    "Status Pengerjaan": r.statusPengerjaan || '-'
+                }));
+                const sheet4Data = records.map((r, i) => ({
+                    "No": i + 1,
+                    "Nama Peserta Didik": r.student?.nama || '-',
+                    "Kelas": r.student?.kelas || '-',
+                    "Kelompok": r.student?.kelompok || '-',
+                    "Nilai Akhir": r.evaluasi?.score || 0
+                }));
+
+                XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(sheet1Data), "Identitas");
+                XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(sheet4Data), "Hasil Evaluasi");
+            }
+
+            const tanggal = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(workbook, `Rekap_Lengkap_MPI_MPLB_${tanggal}.xlsx`);
+            showToast("File Excel (5 Sheet) berhasil diunduh!", "success");
+        };
+
+        window.exportTeacherCSV = function() {
+            const records = window.allStudentsRecords;
+            if (!records || records.length === 0) {
+                showToast("Belum ada data siswa untuk diunduh.", "error");
+                return;
+            }
+
+            let csv = "No,Nama Peserta Didik,Kelas,Absen,Kelompok,Status Pengerjaan,Benar,Salah,Nilai Akhir,Pemahaman Refleksi,Terakhir Diperbarui\r\n";
+            records.forEach((r, idx) => {
+                const s = r.student || {};
+                const ev = r.evaluasi || {};
+                const ref = r.refleksiAkhir || {};
+                csv += `${idx + 1},"${s.nama || ''}","${s.kelas || ''}","${s.absen || ''}","${s.kelompok || ''}","${r.statusPengerjaan || ''}",${ev.benar || 0},${ev.salah || 0},${ev.score || 0},"${ref.pemahaman || ''}","${s.updatedAt || ''}"\r\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            const tanggal = new Date().toISOString().slice(0, 10);
+            link.setAttribute("download", `Rekap_Siswa_MPI_MPLB_${tanggal}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            showToast("Rekap CSV berhasil diunduh!", "success");
+        };
+
+        // =====================================================================
+        // KONTROL ANTARMUKA & HALAMAN PEMBELAJARAN SISWA
+        // =====================================================================
+        window.updateSidebarIdentity = function() {
+            const s = window.appState.student;
+            document.getElementById('sidebarStudentName').innerText = s.nama || 'Peserta Didik';
+            document.getElementById('sidebarStudentClass').innerText = `${s.kelas || '-'} • ${s.kelompok || '-'}`;
+            document.getElementById('sidebarAvatar').innerText = s.nama ? s.nama.charAt(0).toUpperCase() : '?';
+        };
+
+        window.toggleSidebar = function() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        };
+
+        window.switchTab = function(tabId) {
+            window.appState.currentTab = tabId;
+            renderPage(tabId);
+            if (window.innerWidth < 1024) {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+            }
+        };
+
+        window.showToast = function(message, type = 'success') {
+            const tc = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto px-4 py-3 rounded-2xl text-xs font-bold text-white shadow-xl flex items-center gap-2 transition-all animate-fade-in ${type === 'success' ? 'bg-slate-900 border border-emerald-500/40' : 'bg-rose-600'}`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-circle-exclamation'} text-base"></i><span>${message}</span>`;
+            tc.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3500);
+        };
+
+        window.handlePosterUpload = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 500000) {
+                    showToast("Ukuran gambar maksimal 500KB agar penyimpanan cepat!", "error");
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    window.appState.k3.promosi.uploadedImage = e.target.result;
+                    saveStudentProgressToSheets(true);
+                    renderPage('kegiatan3');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.renderPage = function(tabId) {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (btn.getAttribute('data-tab') === tabId) {
+                    btn.classList.add('bg-gradient-to-r', 'from-primary-600', 'to-serenity-600', 'text-white', 'shadow-md', 'shadow-primary-500/20');
+                    btn.classList.remove('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
+                } else {
+                    btn.classList.remove('bg-gradient-to-r', 'from-primary-600', 'to-serenity-600', 'text-white', 'shadow-md', 'shadow-primary-500/20');
+                    btn.classList.add('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
+                }
+            });
+
+            const titles = {
+                beranda: 'Beranda & Identitas Peserta Didik',
+                tujuan: 'Capaian & Tujuan Pembelajaran',
+                kegiatan1: 'Kegiatan 1 — Menemukan Peluang Usaha MPLB',
+                kegiatan2: 'Kegiatan 2 — Perencanaan Proyek & Analisis SWOT',
+                kegiatan3: 'Kegiatan 3 — Studio PjBL & Media Promosi Digital',
+                evaluasi: 'Evaluasi Akhir Pembelajaran (10 Soal Pilihan Ganda)',
+                refleksi: 'Refleksi Akhir Peserta Didik'
+            };
+            document.getElementById('headerTitle').innerText = titles[tabId] || 'MPI MPLB';
+
+            const container = document.getElementById('mainContainer');
+            if (tabId === 'beranda') container.innerHTML = renderBerandaHTML();
+            else if (tabId === 'tujuan') container.innerHTML = renderTujuanHTML();
+            else if (tabId === 'kegiatan1') container.innerHTML = renderKegiatan1HTML();
+            else if (tabId === 'kegiatan2') container.innerHTML = renderKegiatan2HTML();
+            else if (tabId === 'kegiatan3') container.innerHTML = renderKegiatan3HTML();
+            else if (tabId === 'evaluasi') container.innerHTML = renderEvaluasiHTML();
+            else if (tabId === 'refleksi') container.innerHTML = renderRefleksiHTML();
+        };
+
+        function renderBerandaHTML() {
+            const s = window.appState.student;
+            const ev = window.appState.evaluasi;
+            return `
+                <div class="space-y-6 animate-fade-in">
+                    <div class="bg-gradient-to-r from-rose-100 via-sky-100 to-rose-200 rounded-3xl p-6 sm:p-10 text-slate-900 shadow-lg border border-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div class="relative z-10 space-y-4 max-w-xl">
+                            <span class="px-3 py-1 rounded-full bg-primary-600 text-white text-xs font-bold uppercase tracking-wider shadow-sm">Media Pembelajaran Interaktif Berbasis PjBL</span>
+                            <h2 class="font-display font-bold text-2xl sm:text-4xl leading-tight text-slate-900">Peluang Usaha di Bidang Manajemen Perkantoran dan Layanan Bisnis (MPLB)</h2>
+                            <p class="text-slate-700 text-sm sm:text-base leading-relaxed">Halo <strong>${s.nama}</strong> (${s.kelompok})! Selamat belajar dan kembangkan rancangan ide bisnis kreatifmu.</p>
+                            <div class="pt-2 flex flex-wrap gap-3">
+                                <button onclick="switchTab('tujuan')" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-primary-600 to-serenity-600 hover:from-primary-700 hover:to-serenity-700 text-white font-bold text-xs sm:text-sm shadow-lg shadow-primary-500/20 transition-all flex items-center gap-2">
+                                    <span>Mulai Pelajari Tujuan</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                                <button onclick="switchTab('kegiatan1')" class="px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm border border-slate-300 shadow-sm transition-all">
+                                    Masuk Kegiatan 1
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative z-10 w-40 h-40 sm:w-48 sm:h-48 rounded-3xl bg-white/85 backdrop-blur-md border border-white shadow-xl flex items-center justify-center text-center p-4">
+                            <div class="space-y-2">
+                                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-primary-500 to-serenity-500 text-white text-2xl flex items-center justify-center mx-auto shadow-md">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                </div>
+                                <div class="font-bold text-xs text-slate-800">Status Evaluasi</div>
+                                <div class="text-xs font-extrabold ${ev.submitted ? 'text-emerald-600' : 'text-amber-600'}">
+                                    ${ev.submitted ? `Nilai: ${ev.score}/100` : 'Belum Dikerjakan'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-3">
+                            <div class="w-10 h-10 rounded-2xl bg-rose-100 text-primary-700 flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-user-graduate"></i>
+                            </div>
+                            <h3 class="font-display font-bold text-slate-900">Identitas Peserta Didik</h3>
+                            <div class="text-xs space-y-1.5 text-slate-600">
+                                <p>Nama: <strong class="text-slate-900">${s.nama}</strong></p>
+                                <p>Kelas / Absen: <strong class="text-slate-900">${s.kelas} (${s.absen})</strong></p>
+                                <p>Kelompok: <strong class="text-slate-900">${s.kelompok}</strong></p>
+                                <p>Waktu Masuk: <strong class="text-slate-900">${s.waktuMulai}</strong></p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-3">
+                            <div class="w-10 h-10 rounded-2xl bg-serenity-100 text-serenity-700 flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-chalkboard-user"></i>
+                            </div>
+                            <h3 class="font-display font-bold text-slate-900">Informasi Mata Pelajaran</h3>
+                            <div class="text-xs space-y-1.5 text-slate-600">
+                                <p>Guru: <strong class="text-slate-900">Cahyana Dewi Ratna Cantika</strong></p>
+                                <p>Fase / Kelas: <strong class="text-slate-900">Fase E / Kelas 10 SMK</strong></p>
+                                <p>Model: <strong class="text-slate-900">Project-Based Learning (8 JP)</strong></p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-3">
+                            <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-list-check"></i>
+                            </div>
+                            <h3 class="font-display font-bold text-slate-900">Alur Penyelesaian</h3>
+                            <div class="text-xs space-y-1.5 text-slate-600">
+                                <p>1. Selesaikan Kegiatan 1, 2, dan 3.</p>
+                                <p>2. Kerjakan Evaluasi Akhir (10 Soal).</p>
+                                <p>3. Isi Refleksi Akhir Peserta Didik.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTujuanHTML() {
+            return `
+                <div class="space-y-6 animate-fade-in">
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-rose-100 text-primary-700 flex items-center justify-center font-bold text-xl">
+                                <i class="fa-solid fa-bullseye"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold text-primary-600 uppercase tracking-wider">Capaian Pembelajaran Fase E</span>
+                                <h3 class="font-display font-bold text-xl text-slate-900">Tujuan & Indikator Pembelajaran MPLB</h3>
+                            </div>
+                        </div>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            Pada akhir fase E, peserta didik mampu menjelaskan peluang usaha di bidang Manajemen Perkantoran dan Layanan Bisnis (MPLB). Berikut adalah lima indikator pencapaian kompetensi:
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${[
+                            { no: '3.2.1', title: 'Pengertian & Unsur Peluang Usaha', desc: 'Menjelaskan pengertian peluang usaha dan empat unsur peluang usaha yang baik dengan bahasa sendiri secara tepat.' },
+                            { no: '3.2.2', title: 'Contoh Peluang Usaha MPLB', desc: 'Mengidentifikasi contoh peluang usaha di bidang MPLB dan mengaitkannya dengan kebutuhan masyarakat sekitar.' },
+                            { no: '3.2.3', title: 'Pengaruh Tren Digitalisasi', desc: 'Menganalisis pengaruh tren digitalisasi terhadap peluang usaha jasa MPLB (seperti UMKM go digital & QRIS).' },
+                            { no: '3.2.4', title: 'Langkah Memulai & Analisis SWOT', desc: 'Menyusun langkah-langkah memulai usaha dan menganalisis kelayakan ide usaha dengan analisis SWOT (Strengths, Weaknesses, Opportunities, Threats).' },
+                            { no: '3.2.5', title: 'Kunci Keberhasilan & Evaluasi', desc: 'Menerapkan kunci keberhasilan usaha dalam rancangan usaha jasa MPLB dan mengevaluasinya berdasarkan masukan.' }
+                        ].map(item => `
+                            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-3 hover:shadow-md transition-all border-l-4 border-l-primary-500">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-3 py-1 rounded-full bg-rose-50 text-primary-700 text-xs font-bold">${item.no}</span>
+                                    <i class="fa-solid fa-circle-check text-serenity-500"></i>
+                                </div>
+                                <h4 class="font-display font-bold text-slate-900 text-base">${item.title}</h4>
+                                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">${item.desc}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="flex justify-end pt-4">
+                        <button onclick="switchTab('kegiatan1')" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-primary-600 to-serenity-600 hover:from-primary-700 hover:to-serenity-700 text-white text-sm font-bold shadow-md transition-all flex items-center gap-2">
+                            <span>Lanjut ke Kegiatan 1</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderKegiatan1HTML() {
+            const k1 = window.appState.k1;
+            return `
+                <div class="space-y-6 animate-fade-in">
+                    <div class="bg-gradient-to-r from-rose-400 via-primary-500 to-serenity-500 rounded-3xl p-6 sm:p-8 text-white shadow-md">
+                        <span class="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold uppercase tracking-wider">Kegiatan 1 (Pertemuan 1)</span>
+                        <h2 class="font-display font-bold text-2xl sm:text-3xl mt-2">Menemukan Peluang Usaha MPLB di Sekitarku</h2>
+                        <p class="text-rose-100 text-xs sm:text-sm mt-1">Tujuan: Menjelaskan pengertian peluang usaha dan mengidentifikasi contoh peluang usaha MPLB di sekitar.</p>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-xl bg-rose-100 text-primary-700 font-bold flex items-center justify-center text-sm">A</span>
+                            <h3 class="font-display font-bold text-lg text-slate-900">Apersepsi & Pertanyaan Pemantik (Cerita Rio)</h3>
+                        </div>
+                        <div class="p-4 sm:p-5 rounded-2xl bg-rose-serenity border border-primary-200 text-sm text-slate-800 leading-relaxed flex items-start gap-3">
+                            <i class="fa-solid fa-cake-candles text-primary-600 text-xl mt-0.5"></i>
+                            <div>
+                                <strong class="text-primary-900 block mb-1">Cerita Pembuka (Rio — Siswa Kelas X SMK MPLB):</strong>
+                                "Rio membantu ibunya berjualan kue. Pesanan masuk melalui WhatsApp dan telepon, tetapi pesan sering tercampur sehingga beberapa pesanan terlewat. Nota masih ditulis tangan dan mudah hilang. Akibatnya, ibu kesulitan mengetahui keuntungan penjualan setiap bulan."
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">1. Pernahkah kamu melihat pelaku usaha di sekitarmu yang kesulitan mengurus administrasi?</label>
+                                <textarea rows="3" onchange="appState.k1.apersepsi1 = this.value; saveStudentProgressToSheets(false)" placeholder="Tuliskan pengamatanmu..." class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-primary-500 outline-none">${k1.apersepsi1}</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">2. Kemampuan MPLB apa yang dapat membantu mereka?</label>
+                                <textarea rows="3" onchange="appState.k1.apersepsi2 = this.value; saveStudentProgressToSheets(false)" placeholder="Contoh: Pencatatan keuangan digital, pengarsipan..." class="w-full p-3 rounded-xl border border-slate-200 text-sm focus:border-primary-500 outline-none">${k1.apersepsi2}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm">B</span>
+                            <h3 class="font-display font-bold text-lg text-slate-900">Tabel 1.1 — Pengamatan Pelaku Usaha di Sekitarku</h3>
+                        </div>
+                        <div class="space-y-3">
+                            ${k1.tabel1.map((row, idx) => `
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                                    <input type="text" value="${row.pelaku}" onchange="appState.k1.tabel1[${idx}].pelaku = this.value; saveStudentProgressToSheets(false)" placeholder="Nama / Jenis Pelaku Usaha..." class="p-2.5 rounded-xl border border-slate-200 bg-white text-xs font-medium">
+                                    <input type="text" value="${row.kendala}" onchange="appState.k1.tabel1[${idx}].kendala = this.value; saveStudentProgressToSheets(false)" placeholder="Kendala administrasi..." class="p-2.5 rounded-xl border border-slate-200 bg-white text-xs">
+                                    <input type="text" value="${row.solusi}" onchange="appState.k1.tabel1[${idx}].solusi = this.value; saveStudentProgressToSheets(false)" placeholder="Solusi jasa MPLB..." class="p-2.5 rounded-xl border border-slate-200 bg-white text-xs">
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 font-bold flex items-center justify-center text-sm">C</span>
+                            <h3 class="font-display font-bold text-lg text-slate-900">Studi Kasus Individu: Toko Kue "BetterBite"</h3>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                            <strong>Kasus Bu Sekar:</strong> Menerima pesanan lewat WhatsApp dan telepon yang sering tercampur pesan pribadi. Pencatatan keuangan belum teratur sehingga sulit tahu keuntungan bulanan, serta ingin promosi tapi belum tahu strateginya.
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">1. Kendala yang dialami Bu Sekar:</label>
+                                <textarea rows="2" onchange="appState.k1.kasus1 = this.value; saveStudentProgressToSheets(false)" placeholder="Tuliskan kendala..." class="w-full p-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-primary-500">${k1.kasus1}</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">2. Peluang usaha jasa MPLB yang tepat:</label>
+                                <textarea rows="2" onchange="appState.k1.kasus2 = this.value; saveStudentProgressToSheets(false)" placeholder="Tuliskan jenis jasa dan alasannya..." class="w-full p-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-primary-500">${k1.kasus2}</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">3. Teknologi digital yang dapat dimanfaatkan:</label>
+                                <textarea rows="2" onchange="appState.k1.kasus3 = this.value; saveStudentProgressToSheets(false)" placeholder="Tuliskan teknologi digital..." class="w-full p-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-primary-500">${k1.kasus3}</textarea>
+                            </div>
+                        </div>
+                        <button onclick="checkK1Case()" class="px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold shadow-sm">
+                            <i class="fa-solid fa-check-double mr-1.5"></i>Simpan & Lihat Rambu Pembahasan
+                        </button>
+                        ${k1.kasusChecked ? `
+                            <div class="p-4 rounded-2xl bg-rose-50 border border-primary-200 text-xs text-primary-950 space-y-1">
+                                <p class="font-bold text-primary-800">Rambu-Rambu Pembahasan:</p>
+                                <p>• Kendala: Pesanan tercampur, keuangan tidak tercatat teratur, promosi belum maksimal.</p>
+                                <p>• Jasa Tepat: Jasa Pengelolaan Administrasi UMKM / Virtual Assistant.</p>
+                                <p>• Teknologi: WhatsApp Business, Google Sheets / Excel, Canva & Instagram.</p>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 font-bold flex items-center justify-center text-sm">D</span>
+                            <h3 class="font-display font-bold text-lg text-slate-900">Refleksi Diri Kegiatan 1</h3>
+                        </div>
+                        <div class="space-y-3">
+                            ${[
+                                { key: 'q1', text: 'Saya dapat menjelaskan pengertian peluang usaha dengan bahasa saya sendiri.' },
+                                { key: 'q2', text: 'Saya dapat menyebutkan & menjelaskan setidaknya 3 contoh peluang usaha MPLB.' },
+                                { key: 'q3', text: 'Saya aktif berpendapat dan mendengarkan dalam kelompok.' },
+                                { key: 'q4', text: 'Saya sudah menemukan kendala administrasi nyata di sekitar saya.' }
+                            ].map(item => `
+                                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+                                    <span class="text-xs sm:text-sm font-medium text-slate-800">${item.text}</span>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <button onclick="setRefleksi('k1', '${item.key}', 'Sudah')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold border ${k1.refleksi[item.key] === 'Sudah' ? 'bg-amber-400 text-slate-900 border-amber-400' : 'bg-white text-slate-600 border-slate-200'}">Sudah</button>
+                                        <button onclick="setRefleksi('k1', '${item.key}', 'Belum')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold border ${k1.refleksi[item.key] === 'Belum' ? 'bg-rose-600 text-white border-rose-600' : 'bg-white text-slate-600 border-slate-200'}">Belum</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-2">
+                        <button onclick="switchTab('kegiatan2')" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-primary-600 to-serenity-600 hover:from-primary-700 hover:to-serenity-700 text-white text-sm font-bold shadow-md transition-all flex items-center gap-2">
+                            <span>Lanjut ke Kegiatan 2</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderKegiatan2HTML() {
+            const k2 = window.appState.k2;
+            const p = k2.rancanganUsaha;
+            return `
+                <div class="space-y-6 animate-fade-in">
+                    <div class="bg-gradient-to-r from-serenity-500 via-sky-500 to-primary-500 rounded-3xl p-6 sm:p-8 text-white shadow-md">
+                        <span class="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold uppercase tracking-wider">Kegiatan 2 (Pertemuan 2)</span>
+                        <h2 class="font-display font-bold text-2xl sm:text-3xl mt-2">Merencanakan Proyek & Analisis SWOT</h2>
+                        <p class="text-sky-100 text-xs sm:text-sm mt-1">Tujuan: Menganalisis tren digitalisasi, menyusun langkah memulai usaha, dan analisis SWOT.</p>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+                        <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+                            <span class="w-8 h-8 rounded-xl bg-rose-100 text-primary-700 font-bold flex items-center justify-center text-sm">A</span>
+                            <div>
+                                <h3 class="font-display font-bold text-lg text-slate-900">Formulir Perencanaan Usaha Kelompok</h3>
+                                <p class="text-xs text-slate-500">Data ini otomatis tersimpan ke Google Sheets dan terhubung ke Kegiatan 3.</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-xs uppercase tracking-wider text-primary-700">Tabel 2.1 — Rancangan Awal Usaha Kelompok</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Nama Usaha</label>
+                                    <input type="text" value="${p.namaUsaha}" onchange="appState.k2.rancanganUsaha.namaUsaha = this.value; saveStudentProgressToSheets(false)" placeholder="Contoh: AdminPro Solusi" class="w-full p-3 rounded-xl border border-slate-200 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Jasa yang Ditawarkan</label>
+                                    <input type="text" value="${p.jasa}" onchange="appState.k2.rancanganUsaha.jasa = this.value; saveStudentProgressToSheets(false)" placeholder="Contoh: Virtual Assistant & Pembukuan UMKM" class="w-full p-3 rounded-xl border border-slate-200 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Target Pelanggan</label>
+                                    <input type="text" value="${p.targetPelanggan}" onchange="appState.k2.rancanganUsaha.targetPelanggan = this.value; saveStudentProgressToSheets(false)" placeholder="Contoh: Pedagang online & UMKM lokal" class="w-full p-3 rounded-xl border border-slate-200 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Nilai Unggul (Keunikan)</label>
+                                    <input type="text" value="${p.nilaiUnggul}" onchange="appState.k2.rancanganUsaha.nilaiUnggul = this.value; saveStudentProgressToSheets(false)" placeholder="Contoh: Respons cepat & laporan real-time" class="w-full p-3 rounded-xl border border-slate-200 text-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 pt-4 border-t border-slate-100">
+                            <h4 class="font-bold text-xs uppercase tracking-wider text-primary-700">Tabel 2.3 — Analisis SWOT Ide Usaha Kelompok</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200 space-y-2">
+                                    <span class="font-bold text-emerald-900 text-xs">Strengths (Kekuatan)</span>
+                                    <textarea rows="2" onchange="appState.k2.swot.strengths[0] = this.value; saveStudentProgressToSheets(false)" placeholder="1. Keunggulan internal..." class="w-full p-2.5 rounded-xl border border-emerald-200 bg-white text-xs">${k2.swot.strengths[0] || ''}</textarea>
+                                    <textarea rows="2" onchange="appState.k2.swot.strengths[1] = this.value; saveStudentProgressToSheets(false)" placeholder="2. Keunggulan internal..." class="w-full p-2.5 rounded-xl border border-emerald-200 bg-white text-xs">${k2.swot.strengths[1] || ''}</textarea>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-rose-50/50 border border-rose-200 space-y-2">
+                                    <span class="font-bold text-rose-900 text-xs">Weaknesses (Kelemahan)</span>
+                                    <textarea rows="2" onchange="appState.k2.swot.weaknesses[0] = this.value; saveStudentProgressToSheets(false)" placeholder="1. Keterbatasan internal..." class="w-full p-2.5 rounded-xl border border-rose-200 bg-white text-xs">${k2.swot.weaknesses[0] || ''}</textarea>
+                                    <textarea rows="2" onchange="appState.k2.swot.weaknesses[1] = this.value; saveStudentProgressToSheets(false)" placeholder="2. Keterbatasan internal..." class="w-full p-2.5 rounded-xl border border-rose-200 bg-white text-xs">${k2.swot.weaknesses[1] || ''}</textarea>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-sky-50/50 border border-sky-200 space-y-2">
+                                    <span class="font-bold text-sky-900 text-xs">Opportunities (Peluang)</span>
+                                    <textarea rows="2" onchange="appState.k2.swot.opportunities[0] = this.value; saveStudentProgressToSheets(false)" placeholder="1. Peluang pasar..." class="w-full p-2.5 rounded-xl border border-sky-200 bg-white text-xs">${k2.swot.opportunities[0] || ''}</textarea>
+                                    <textarea rows="2" onchange="appState.k2.swot.opportunities[1] = this.value; saveStudentProgressToSheets(false)" placeholder="2. Peluang pasar..." class="w-full p-2.5 rounded-xl border border-sky-200 bg-white text-xs">${k2.swot.opportunities[1] || ''}</textarea>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-amber-50/50 border border-amber-200 space-y-2">
+                                    <span class="font-bold text-amber-900 text-xs">Threats (Ancaman)</span>
+                                    <textarea rows="2" onchange="appState.k2.swot.threats[0] = this.value; saveStudentProgressToSheets(false)" placeholder="1. Risiko / ancaman..." class="w-full p-2.5 rounded-xl border border-amber-200 bg-white text-xs">${k2.swot.threats[0] || ''}</textarea>
+                                    <textarea rows="2" onchange="appState.k2.swot.threats[1] = this.value; saveStudentProgressToSheets(false)" placeholder="2. Risiko / ancaman..." class="w-full p-2.5 rounded-xl border border-amber-200 bg-white text-xs">${k2.swot.threats[1] || ''}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end pt-3">
+                            <button onclick="saveStudentProgressToSheets(true)" class="px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs shadow-md">Simpan Rancangan Proyek</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-xl bg-serenity-100 text-serenity-700 font-bold flex items-center justify-center text-sm">B</span>
+                            <h3 class="font-display font-bold text-lg text-slate-900">Studi Kasus Individu: Jasa CV "GoCareer" (Mifta)</h3>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                            <strong>Kasus Mifta (Lulusan SMK MPLB):</strong> Membuka jasa pembuatan CV. Mengumpulkan 8 fakta: (1) Mahir desain & pengolah kata, (2) Belum punya portofolio, (3) Banyak pencari kerja baru, (4) Ada 3 pesaing harga lebih murah, (5) Modal terbatas (laptop & printer), (6) Promosi medsos mudah, (7) Cepat membalas pesan, (8) Selera desain cepat berubah.
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">1. Strategi Mifta memanfaatkan kelebihan untuk meraih peluang:</label>
+                                <textarea rows="2" onchange="appState.k2.goCareerQ1 = this.value; saveStudentProgressToSheets(false)" placeholder="Tuliskan strategi..." class="w-full p-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-primary-500">${k2.goCareerQ1}</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">2. Cara agar tetap unggul tanpa menurunkan harga (minimal 2 strategi):</label>
+                                <textarea rows="2" onchange="appState.k2.goCareerQ2 = this.value; saveStudentProgressToSheets(false)" placeholder="Tuliskan strategi keunggulan..." class="w-full p-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-primary-500">${k2.goCareerQ2}</textarea>
+                            </div>
+                        </div>
+                        <button onclick="checkGoCareer()" class="px-5 py-2.5 rounded-xl bg-serenity-600 hover:bg-serenity-700 text-white text-xs font-bold shadow-sm">
+                            <i class="fa-solid fa-spell-check mr-1.5"></i>Simpan & Periksa Analisis GoCareer
+                        </button>
+                        ${k2.goCareerChecked ? `
+                            <div class="p-4 rounded-2xl bg-sky-50 border border-sky-200 text-xs text-sky-950 space-y-1">
+                                <p class="font-bold text-sky-900">Rambu-Rambu Pembahasan:</p>
+                                <p>• Strategi SO: Memanfaatkan kemampuan desain & responsif membuat CV menarik bagi pencari kerja baru via media sosial.</p>
+                                <p>• Tanpa Perang Harga: Memberikan layanan revisi gratis, konsultasi kilat, dan desain ATS-friendly berkualitas tinggi.</p>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="flex justify-end pt-2">
+                        <button onclick="switchTab('kegiatan3')" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-primary-600 to-serenity-600 hover:from-primary-700 hover:to-serenity-700 text-white text-sm font-bold shadow-md transition-all flex items-center gap-2">
+                            <span>Lanjut ke Kegiatan 3 (Studio PjBL)</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderKegiatan3HTML() {
+            const k3 = window.appState.k3;
+            const p = k3.promosi;
+            return `
+                <div class="space-y-6 animate-fade-in">
+                    <div class="bg-gradient-to-r from-serenity-600 via-sky-600 to-primary-600 rounded-3xl p-6 sm:p-8 text-white shadow-md">
+                        <span class="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold uppercase tracking-wider">Kegiatan 3 (Pertemuan 3 & Luar Kelas)</span>
+                        <h2 class="font-display font-bold text-2xl sm:text-3xl mt-2">Mewujudkan & Menguji Proyek PjBL</h2>
+                        <p class="text-sky-100 text-xs sm:text-sm mt-1">Tujuan: Menerapkan 5 kunci keberhasilan usaha, menyusun proposal, & merancang media promosi digital.</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-slate-900 via-slate-950 to-serenity-950 rounded-3xl p-6 sm:p-8 text-white shadow-lg space-y-6">
+                        <div class="border-b border-white/15 pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div>
+                                <span class="px-3 py-1 rounded-full bg-serenity-500 text-white text-xs font-bold uppercase tracking-wider">Studio PjBL Kelompok</span>
+                                <h3 class="font-display font-bold text-xl sm:text-2xl mt-2">Pratinjau Poster Promosi Digital</h3>
+                            </div>
+                            <label class="px-4 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold cursor-pointer shadow-md transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <span>Unggah Poster Kelompok</span>
+                                <input type="file" accept="image/*" onchange="handlePosterUpload(event)" class="hidden">
+                            </label>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white text-slate-800 rounded-2xl p-6">
+                            <div class="space-y-4">
+                                <h4 class="font-bold text-sm text-serenity-800"><i class="fa-solid fa-pen-to-square mr-1"></i> Form Konten Media Promosi Digital</h4>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Nama Usaha / Judul Paket</label>
+                                    <input type="text" value="${p.namaUsaha}" onchange="appState.k3.promosi.namaUsaha = this.value; saveStudentProgressToSheets(false); renderPage('kegiatan3')" placeholder="Contoh: AdminPro Solusi" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Jasa yang Ditawarkan</label>
+                                    <input type="text" value="${p.jasa}" onchange="appState.k3.promosi.jasa = this.value; saveStudentProgressToSheets(false); renderPage('kegiatan3')" placeholder="Contoh: Jasa Pembukuan UMKM" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Keunggulan & Rincian Paket</label>
+                                    <input type="text" value="${p.keunggulan}" onchange="appState.k3.promosi.keunggulan = this.value; saveStudentProgressToSheets(false); renderPage('kegiatan3')" placeholder="Contoh: Laporan rapi & cepat" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Informasi Kontak Pemesanan</label>
+                                    <input type="text" value="${p.kontak}" onchange="appState.k3.promosi.kontak = this.value; saveStudentProgressToSheets(false); renderPage('kegiatan3')" placeholder="Contoh: WA 0812-xxxx-xxxx" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-mono">
+                                </div>
+                            </div>
+
+                            <div class="rounded-2xl bg-slate-50 border-2 border-slate-200 p-4 flex flex-col justify-between shadow-inner relative overflow-hidden">
+                                ${p.uploadedImage ? `
+                                    <div class="absolute inset-0 z-20 bg-white flex flex-col items-center justify-center p-2">
+                                        <img src="${p.uploadedImage}" alt="Poster Diunggah" class="max-h-80 rounded-xl object-contain shadow-md">
+                                        <button onclick="appState.k3.promosi.uploadedImage=''; saveStudentProgressToSheets(false); renderPage('kegiatan3');" class="mt-2 px-3 py-1 rounded-lg bg-rose-600 text-white text-[10px] font-bold">Hapus Poster Unggahan</button>
+                                    </div>
+                                ` : ''}
+                                
+                                <div class="bg-sky-50/80 rounded-xl p-4 border border-sky-100 space-y-3 relative overflow-hidden">
+                                    <div class="text-center space-y-1">
+                                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-sky-700">PAKET JASA MPLB</span>
+                                        <h3 class="font-display font-black text-xl text-sky-950 uppercase tracking-tight">${p.namaUsaha || 'NAMA USAHA ANDA'}</h3>
+                                    </div>
+                                    <div class="bg-sky-600 text-white text-[11px] font-bold py-1.5 px-3 rounded-lg text-center shadow-sm">
+                                        Pilih paket sesuai kebutuhanmu
+                                    </div>
+                                    <div class="bg-white rounded-xl p-3 border border-slate-200 shadow-sm space-y-1">
+                                        <div class="bg-sky-700 text-white text-[10px] font-bold px-2 py-0.5 rounded inline-block mb-1">Layanan Utama</div>
+                                        <p class="text-[11px] text-slate-700 font-medium">${p.jasa || 'Deskripsi layanan jasa akan tampil di sini...'}</p>
+                                    </div>
+                                    <div class="bg-white rounded-xl p-3 border border-slate-200 shadow-sm space-y-1">
+                                        <div class="bg-sky-800 text-white text-[10px] font-bold px-2 py-0.5 rounded inline-block mb-1">Keunggulan</div>
+                                        <p class="text-[11px] text-slate-700">${p.keunggulan || 'Keunggulan layanan akan tampil di sini...'}</p>
+                                    </div>
+                                </div>
+
+                                <div class="pt-3 flex items-center justify-between border-t border-slate-200 mt-3">
+                                    <div class="text-[11px] font-mono text-slate-700 font-semibold">
+                                        <i class="fa-solid fa-phone text-sky-700 mr-1"></i>${p.kontak || 'Kontak pemesanan'}
+                                    </div>
+                                    <span class="text-[10px] font-bold text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full">Live Preview PjBL</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-xl bg-rose-100 text-primary-700 font-bold flex items-center justify-center text-sm">B</span>
+                            <h3 class="font-display font-bold text-lg text-slate-900">Studi Kasus Individu: Pelayanan Prima A3 ("AdminPro" - Kasus Pak Hadi)</h3>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                            <strong>Kasus Pak Hadi:</strong> Memesan laporan penjualan bulanan ke "AdminPro". Dibalas 2 hari kemudian, ada kesalahan data, dan saat dikomplain admin menjawab kurang memuaskan serta tidak menawarkan perbaikan.
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="p-3 rounded-xl bg-sky-50 border border-sky-200">
+                                <label class="block text-[11px] font-bold text-sky-900 mb-1">1. Attitude (Sikap Ramah)</label>
+                                <textarea rows="2" onchange="appState.k3.kasusAdminPro.attitude = this.value; saveStudentProgressToSheets(false)" placeholder="Contoh: Selamat pagi Pak Hadi, mohon maaf..." class="w-full p-2 rounded border border-sky-200 bg-white text-xs">${k3.kasusAdminPro.attitude}</textarea>
+                            </div>
+                            <div class="p-3 rounded-xl bg-amber-50 border border-amber-200">
+                                <label class="block text-[11px] font-bold text-amber-900 mb-1">2. Attention (Perhatian)</label>
+                                <textarea rows="2" onchange="appState.k3.kasusAdminPro.attention = this.value; saveStudentProgressToSheets(false)" placeholder="Contoh: Kami catat bagian data yang keliru..." class="w-full p-2 rounded border border-amber-200 bg-white text-xs">${k3.kasusAdminPro.attention}</textarea>
+                            </div>
+                            <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+                                <label class="block text-[11px] font-bold text-emerald-900 mb-1">3. Action (Tindakan Cepat)</label>
+                                <textarea rows="2" onchange="appState.k3.kasusAdminPro.action = this.value; saveStudentProgressToSheets(false)" placeholder="Contoh: Laporan revisi segera kami kirimkan..." class="w-full p-2 rounded border border-emerald-200 bg-white text-xs">${k3.kasusAdminPro.action}</textarea>
+                            </div>
+                        </div>
+                        <button onclick="checkAdminProCase()" class="px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold shadow-sm">
+                            <i class="fa-solid fa-paper-plane mr-1.5"></i>Simpan Analisis Prinsip A3
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 font-bold flex items-center justify-center text-sm">C</span>
+                            <h3 class="font-display font-bold text-lg text-slate-900">Refleksi Diri Kegiatan 3</h3>
+                        </div>
+                        <div class="space-y-3">
+                            ${[
+                                { key: 'q1', text: 'Saya mengerjakan tugas proyek sesuai jadwal dan tanggung jawab saya.' },
+                                { key: 'q2', text: 'Saya dapat menerapkan 5 kunci keberhasilan usaha pada rancangan kelompok.' },
+                                { key: 'q3', text: 'Saya menerima masukan dengan terbuka dan ikut serta memperbaiki produk.' },
+                                { key: 'q4', text: 'Saya dapat menyampaikan ide usaha dengan jelas saat presentasi.' }
+                            ].map(item => `
+                                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+                                    <span class="text-xs sm:text-sm font-medium text-slate-800">${item.text}</span>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <button onclick="setRefleksi('k3', '${item.key}', 'Sudah')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold border ${k3.refleksi[item.key] === 'Sudah' ? 'bg-amber-400 text-slate-900 border-amber-400' : 'bg-white text-slate-600 border-slate-200'}">Sudah</button>
+                                        <button onclick="setRefleksi('k3', '${item.key}', 'Belum')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold border ${k3.refleksi[item.key] === 'Belum' ? 'bg-rose-600 text-white border-rose-600' : 'bg-white text-slate-600 border-slate-200'}">Belum</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-2">
+                        <button onclick="switchTab('evaluasi')" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-primary-600 to-serenity-600 hover:from-primary-700 hover:to-serenity-700 text-white text-sm font-bold shadow-md transition-all flex items-center gap-2">
+                            <span>Lanjut ke Evaluasi Akhir (10 Soal)</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderEvaluasiHTML() {
+            const ev = window.appState.evaluasi;
+            if (ev.submitted) {
+                return `
+                    <div class="space-y-6 animate-fade-in max-w-3xl mx-auto">
+                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 text-center space-y-6">
+                            <div class="w-20 h-20 rounded-3xl bg-rose-100 text-primary-600 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                                <i class="fa-solid fa-award"></i>
+                            </div>
+                            <div>
+                                <span class="px-3 py-1 rounded-full bg-rose-50 text-primary-700 text-xs font-bold uppercase tracking-wider">Hasil Evaluasi Akhir Tersimpan</span>
+                                <h3 class="font-display font-bold text-3xl text-slate-900 mt-2">Nilai Akhir: ${ev.score} / 100</h3>
+                                <p class="text-sm text-slate-600 mt-1">Jawaban Benar: <strong>${ev.benar}</strong> dari 10 Soal (${ev.salah} Salah)</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                                    <div class="font-bold text-xs text-slate-700">Status Ketuntasan (KKTP = 75):</div>
+                                    <div class="text-sm font-bold ${ev.score >= 75 ? 'text-emerald-600' : 'text-rose-600'}">
+                                        ${ev.score >= 75 ? '✓ TUNTAS (Sangat Baik)' : '⚠ Belum Tuntas (Perlu Pengayaan / Remedial)'}
+                                    </div>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                                    <div class="font-bold text-xs text-slate-700">Status Penyimpanan:</div>
+                                    <div class="text-sm font-semibold text-emerald-700">✓ Otomatis Terkirim ke Guru</div>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 flex flex-wrap justify-center gap-3">
+                                <button onclick="switchTab('beranda')" class="px-6 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">
+                                    Kembali ke Beranda Siswa
+                                </button>
+                                <button onclick="switchTab('refleksi')" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-primary-600 to-serenity-600 text-white font-bold text-xs shadow-md">
+                                    Lanjut Isi Refleksi Akhir →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const q = evaluasiSoal[ev.currentIndex];
+            return `
+                <div class="space-y-6 animate-fade-in max-w-3xl mx-auto">
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                            <div>
+                                <span class="px-3 py-1 rounded-full bg-rose-50 text-primary-700 text-xs font-bold">Soal ${ev.currentIndex + 1} dari 10</span>
+                                <h3 class="font-display font-bold text-lg text-slate-900 mt-1">Evaluasi Akhir Pembelajaran MPLB</h3>
+                            </div>
+                            <span class="text-xs font-semibold text-slate-500">Pilih satu jawaban tepat</span>
+                        </div>
+
+                        <div class="space-y-4">
+                            <p class="text-base font-semibold text-slate-900 leading-relaxed">${q.soal}</p>
+                            <div class="space-y-2.5">
+                                ${Object.entries(q.options).map(([optKey, optVal]) => `
+                                    <label class="flex items-start gap-3 p-4 rounded-2xl border transition-all cursor-pointer ${ev.answers[q.id] === optKey ? 'bg-rose-50 border-primary-500 text-primary-950 font-bold shadow-sm' : 'bg-slate-50 border-slate-200 hover:bg-white text-slate-700'}">
+                                        <input type="radio" name="question_${q.id}" value="${optKey}" ${ev.answers[q.id] === optKey ? 'checked' : ''} onchange="answerEvaluasi(${q.id}, '${optKey}')" class="mt-1">
+                                        <span class="text-sm"><strong>${optKey}.</strong> ${optVal}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                            <button onclick="prevEvalSoal()" ${ev.currentIndex === 0 ? 'disabled' : ''} class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs disabled:opacity-40">
+                                ← Sebelumnya
+                            </button>
+                            <div class="flex gap-2">
+                                ${ev.currentIndex < 9 ? `
+                                    <button onclick="nextEvalSoal()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-serenity-600 hover:opacity-95 text-white font-bold text-xs shadow-md">
+                                        Berikutnya →
+                                    </button>
+                                ` : `
+                                    <button onclick="submitEvaluasi()" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md">
+                                        Kumpulkan Jawaban Final ✓
+                                    </button>
+                                `}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRefleksiHTML() {
+            const r = window.appState.refleksiAkhir;
+            return `
+                <div class="space-y-6 animate-fade-in max-w-3xl mx-auto">
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+                        <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xl">
+                                <i class="fa-solid fa-comments"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Refleksi Akhir Peserta Didik</span>
+                                <h3 class="font-display font-bold text-xl text-slate-900">Bagikan Pengalaman Belajarmu</h3>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 text-sm">
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1.5">1. Bagaimana tingkat pemahamanmu terhadap materi Peluang Usaha di Bidang MPLB? <span class="text-rose-500">*</span></label>
+                                <select onchange="appState.refleksiAkhir.pemahaman = this.value" class="w-full p-3 rounded-xl border border-slate-200 text-sm font-medium">
+                                    <option value="">-- Pilih Tingkat Pemahaman --</option>
+                                    <option value="Sangat Paham" ${r.pemahaman === 'Sangat Paham' ? 'selected' : ''}>Sangat Paham & Siap Mempraktikkan</option>
+                                    <option value="Paham" ${r.pemahaman === 'Paham' ? 'selected' : ''}>Paham Sebagian Besar</option>
+                                    <option value="Cukup Paham" ${r.pemahaman === 'Cukup Paham' ? 'selected' : ''}>Cukup Paham, Perlu Latihan Tambahan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1.5">2. Bagaimana perasaanmu selama mengikuti pembelajaran berbasis proyek (PjBL) ini? <span class="text-rose-500">*</span></label>
+                                <input type="text" value="${r.perasaan}" onchange="appState.refleksiAkhir.perasaan = this.value" placeholder="Contoh: Senang, tertantang, dan lebih memahami dunia kerja..." class="w-full p-3 rounded-xl border border-slate-200 text-sm">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1.5">3. Kegiatan mana yang paling berkesan atau menarik bagimu?</label>
+                                <textarea rows="2" onchange="appState.refleksiAkhir.menarik = this.value" placeholder="Tuliskan kegiatan favoritmu..." class="w-full p-3 rounded-xl border border-slate-200 text-sm">${r.menarik}</textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1.5">4. Kendala atau kesulitan apa yang kamu alami selama pembelajaran?</label>
+                                <textarea rows="2" onchange="appState.refleksiAkhir.kesulitan = this.value" placeholder="Tuliskan kendala (jika ada)..." class="w-full p-3 rounded-xl border border-slate-200 text-sm">${r.kesulitan}</textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1.5">5. Apa hal lain yang ingin kamu pelajari lebih lanjut mengenai kewirausahaan MPLB?</label>
+                                <input type="text" value="${r.lanjutan}" onchange="appState.refleksiAkhir.lanjutan = this.value" placeholder="Contoh: Strategi pemasaran digital lanjutan..." class="w-full p-3 rounded-xl border border-slate-200 text-sm">
+                            </div>
+                        </div>
+
+                        <button onclick="submitRefleksi()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-primary-600 to-serenity-600 text-white font-bold text-sm shadow-md transition-all">
+                            Kirim Refleksi & Kembali ke Beranda ✓
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // INTERAKSI AKSI SISWA
+        window.setRefleksi = function(keg, key, val) {
+            window.appState[keg].refleksi[key] = val;
+            saveStudentProgressToSheets(false);
+            renderPage(window.appState.currentTab);
+            showToast("Status refleksi diperbarui!", "success");
+        };
+
+        window.checkK1Case = function() {
+            window.appState.k1.kasusChecked = true;
+            saveStudentProgressToSheets(true);
+            renderPage('kegiatan1');
+        };
+
+        window.checkGoCareer = function() {
+            window.appState.k2.goCareerChecked = true;
+            saveStudentProgressToSheets(true);
+            renderPage('kegiatan2');
+        };
+
+        window.checkAdminProCase = function() {
+            const c = window.appState.k3.kasusAdminPro;
+            if (!c.attitude.trim() || !c.attention.trim() || !c.action.trim()) {
+                showToast("Lengkapi ketiga respons prinsip A3 (Attitude, Attention, Action)!", "error");
+                return;
+            }
+            c.submitted = true;
+            saveStudentProgressToSheets(true);
+            renderPage('kegiatan3');
+        };
+
+        window.answerEvaluasi = function(qId, optKey) {
+            window.appState.evaluasi.answers[qId] = optKey;
+            saveStudentProgressToSheets(false);
+        };
+
+        window.nextEvalSoal = function() {
+            if (window.appState.evaluasi.currentIndex < 9) {
+                window.appState.evaluasi.currentIndex++;
+                renderPage('evaluasi');
+            }
+        };
+
+        window.prevEvalSoal = function() {
+            if (window.appState.evaluasi.currentIndex > 0) {
+                window.appState.evaluasi.currentIndex--;
+                renderPage('evaluasi');
+            }
+        };
+
+        window.submitEvaluasi = async function() {
+            const ev = window.appState.evaluasi;
+            let benar = 0;
+            evaluasiSoal.forEach(q => {
+                if (ev.answers[q.id] === q.kunci) benar++;
+            });
+            ev.benar = benar;
+            ev.salah = 10 - benar;
+            ev.score = benar * 10;
+            ev.submitted = true;
+
+            await saveStudentProgressToSheets(false);
+            showToast(`Evaluasi selesai! Nilai Anda: ${ev.score} & otomatis tersimpan ke guru.`, "success");
+            
+            switchTab('beranda');
+        };
+
+        window.submitRefleksi = async function() {
+            const r = window.appState.refleksiAkhir;
+            if (!r.pemahaman || !r.perasaan) {
+                showToast("Lengkapi tingkat pemahaman dan perasaan terlebih dahulu!", "error");
+                return;
+            }
+            r.submitted = true;
+            await saveStudentProgressToSheets(false);
+            showToast("Refleksi berhasil disimpan ke server! Mengarahkan ke Beranda...", "success");
+            
+            switchTab('beranda');
+        };
+    </script>
+</body>
+</html>
